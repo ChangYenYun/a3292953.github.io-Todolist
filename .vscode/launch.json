@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "SpringAiOllamaApplication",
+            "request": "launch",
+            "mainClass": "com.example.spring_ai_ollama.SpringAiOllamaApplication",
+            "projectName": "spring-ai-ollama"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TodolistSpringbootApplication<todolist-springboot>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.todolist_springboot.TodolistSpringbootApplication",
+            "projectName": "todolist-springboot",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
