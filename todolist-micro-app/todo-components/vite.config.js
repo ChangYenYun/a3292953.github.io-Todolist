@@ -19,7 +19,7 @@ export default defineConfig({
     }),
   ],
   build: {
-    base: "/", // 確保基底路徑正確，避免重複 /assets
+    base: "/todo-components/", // 改為您的 GitHub 專案名稱
     assetsDir: "", // 清空資源目錄前綴，避免生成 assets/assets
     modulePreload: false,
     target: "esnext",

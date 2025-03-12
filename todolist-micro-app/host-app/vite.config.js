@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react"; // 這是一個專為 Vite 設計的 R
 import federation from "@originjs/vite-plugin-federation"; // 實現模組聯邦（Module Federation）的插件，用於微前端應用程式之間的模組共享。
 
 export default defineConfig({
+  base: '/a3292953.github.io-Todolist/', // 添加這一行，路徑應與您的倉庫名稱相匹配
   plugins: [
     react(),
     federation({
@@ -16,6 +17,7 @@ export default defineConfig({
   ],
 
   build: {
+    base: "/host-app/", // 改為您的 GitHub 專案名
     modulePreload: false, // 禁用模組預加載，減少瀏覽器在預加載不必要資源時的開銷。
     target: "esnext", // 設定編譯目標為最新的 ES 規範，這樣可以利用現代瀏覽器的最佳性能。
     minify: false, // 禁用代碼壓縮，方便開發時進行調試。
