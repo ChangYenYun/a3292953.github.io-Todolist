@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react"; // 這是一個專為 Vite 設計的 R
 import federation from "@originjs/vite-plugin-federation"; // 實現模組聯邦（Module Federation）的插件，用於微前端應用程式之間的模組共享。
 
 export default defineConfig({
+  base: '/a3292953.github.io-Todolist/', // 添加這一行，路徑應與您的倉庫名稱相匹配
   plugins: [
     react(),
     federation({
