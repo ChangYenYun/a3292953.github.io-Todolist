@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TWSEUtil",
+            "request": "launch",
+            "mainClass": "com.example.spring_ai_ollama.util.TWSEUtil",
+            "projectName": "spring-ai-ollama"
+        },
+        {
+            "type": "java",
             "name": "SpringAiOllamaApplication",
             "request": "launch",
             "mainClass": "com.example.spring_ai_ollama.SpringAiOllamaApplication",

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/3.0.0/pure-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>股票資料分析平台</title>
+    <style>
+        :root {
+            --primary-color: #d4af37;
+            --secondary-color: #b8860b;
+            --background-color: #1a1a1a;
+            --card-bg: #252525;
+            --text-color: #ffffff;
+            --border-color: #333333;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+        
+        .pure-form fieldset {
+            padding: 0;
+            border: none;
+        }
+        
+        .pure-button-primary {
+            background-color: var(--primary-color);
+            transition: background-color 0.3s;
+        }
+        
+        .pure-button-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .stock-search input {
+            border-radius: 4px;
+            padding: 8px 12px;
+            width: 200px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stock-search button {
+            padding: 8px 15px;
+            border-radius: 4px;
+        }
+        
+        .pure-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .pure-table th {
+            background-color: #333333;
+            color: var(--primary-color);
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .pure-table td, .pure-table th {
+            padding: 12px 8px;
+            border-color: #444444;
+        }
+        
+        .pure-table tbody tr:hover {
+            background-color: #303030;
+        }
+        
+        .chart-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart {
+            min-height: 250px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .ai-suggestion {
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .copy-btn:hover {
+            color: var(--secondary-color);
+        }
+        
+        .question-box {
+            background-color: #303030;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 0 4px 4px 0;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        .iframe-container {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        iframe {
+            border: none;
+            width: 100%;
+            height: 500px;
+        }
+        
+        @media (max-width: 1200px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .layout-grid {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>台股資料分析平台</h1>
+            <p>實時股票資訊查詢與技術分析工具</p>
+        </div>
+        
+        <div class="layout-grid">
+            <!-- 查詢股票 -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-search"></i>
+                    <h2>股票查詢</h2>
+                </div>
+                <div class="pure-form stock-search">
+                    <input type="text" id="symbol" placeholder="請輸入股票代號" value="2330" required />
+                    <button onclick="fetchStockData()" class="pure-button pure-button-primary">
+                        <i class="fas fa-search"></i> 查詢
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 股票資料列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-table"></i>
+                    <h2>股票資料列表</h2>
+                </div>
+                <div class="table-responsive">
+                    <table id="stockTable" class="pure-table pure-table-bordered">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>股票代號</th>
+                                <th>股票名稱</th>
+                                <th>收盤價</th>
+                                <th>殖利率(%)</th>
+                                <th>股利年度</th>
+                                <th>本益比(PE)</th>
+                                <th>股價淨值比(PB)</th>
+                                <th>財報年/季</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 股票資料會在這邊動態顯示 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 股票走勢圖 -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>股票走勢分析</h2>
+                </div>
+                <div class="chart-container">
+                    <div class="chart" id="curve_price_chart"></div>
+                    <div class="chart" id="curve_yield_chart"></div>
+                    <div class="chart" id="curve_pe_chart"></div>
+                    <div class="chart" id="curve_pb_chart"></div>
+                </div>
+            </div>
+            
+            <!-- AI 投資建議 -->
+            <div class="card ai-suggestion">
+                <div class="card-header">
+                    <i class="fas fa-robot"></i>
+                    <h2>AI 投資建議</h2>
+                </div>
+                <p>詢問 AI 的文字敘述:</p>
+                <button id="copyQuestion" onclick="copy()" class="copy-btn">
+                    <i class="fas fa-copy"></i> 複製
+                </button>
+                <div id="question" class="question-box">
+                    <!-- AI 建議會在這裡顯示 -->
+                </div>
+            </div>
+            
+            <!-- 外部資源 -->
+            <div class="card iframe-container">
+                <div class="card-header">
+                    <i class="fas fa-external-link-alt"></i>
+                    <h2>即時交易資訊</h2>
+                </div>
+                <iframe src="http://localhost:8080/" width="100%" height="500"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="stock_data.js"></script>
+
+       <!-- 將 Spring AI 文字渲染成白色的腳本 -->
+       <script>
+        // 頁面載入時執行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 嘗試在頁面中找到並修改 iframe 後的內容
+            setTimeout(function() {
+                try {
+                    // 定義一個函數來更新 iframe 中的樣式
+                    function updateIframeStyles() {
+                        const iframes = document.querySelectorAll('iframe');
+                        iframes.forEach(iframe => {
+                            try {
+                                // 嘗試訪問 iframe 內容並添加樣式
+                                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                                
+                                // 創建一個樣式元素
+                                const style = iframeDoc.createElement('style');
+                                style.textContent = `
+                                    body, p, div, span, td, th, h1, h2, h3, h4, h5, h6 {
+                                        color: #ffffff !important;
+                                    }
+                                    .question-box, textarea, pre, code {
+                                        color: #ffffff !important;
+                                        background-color: #303030 !important;
+                                    }
+                                `;
+                                
+                                // 添加樣式到 iframe 的 head
+                                iframeDoc.head.appendChild(style);
+                            } catch (e) {
+                                console.log('無法修改 iframe 內容:', e);
+                            }
+                        });
+                    }
+                    
+                    // 初次執行
+                    updateIframeStyles();
+                    
+                    // 每3秒嘗試一次，以防 iframe 延遲載入
+                    setInterval(updateIframeStyles, 3000);
+                    
+                } catch (e) {
+                    console.error('更新 iframe 樣式時出錯:', e);
+                }
+            }, 1000);
+        });
+    </script>
+
+    <script>
+        // 額外加入的互動功能
+        function copy() {
+            const questionText = document.getElementById('question').innerText;
+            navigator.clipboard.writeText(questionText)
+                .then(() => {
+                    alert('已複製到剪貼簿!');
+                })
+                .catch(err => {
+                    console.error('複製失敗:', err);
+                });
+        }
+        
+        // 假設的股票資料獲取函數 (這應該在您的 stock_data.js 檔案中定義)
+        // 如果沒有定義，這裡提供一個示例實現
+        if (typeof fetchStockData !== 'function') {
+            function fetchStockData() {
+                const symbol = document.getElementById('symbol').value;
+                // 這裡應該是您的 API 調用邏輯
+                console.log(`搜尋股票代號: ${symbol}`);
+                
+                // 顯示載入動畫或消息
+                const tbody = document.querySelector('#stockTable tbody');
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">正在載入資料...</td></tr>';
+                
+                // 載入示例數據 (實際應用中應替換為 API 調用)
+                setTimeout(() => {
+                    // 模擬數據
+                    const sampleData = [
+                        ['2023/12/30', symbol, '台積電', '580', '1.85', '2022', '16.5', '3.2', '2023/Q3'],
+                        ['2023/12/29', symbol, '台積電', '575', '1.86', '2022', '16.3', '3.1', '2023/Q3'],
+                        ['2023/12/28', symbol, '台積電', '573', '1.87', '2022', '16.2', '3.1', '2023/Q3']
+                    ];
+                    
+                    // 更新表格
+                    tbody.innerHTML = '';
+                    sampleData.forEach(row => {
+                        const tr = document.createElement('tr');
+                        row.forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell;
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+                    
+                    // 更新圖表 (假設方法)
+                    updateCharts(sampleData);
+                    
+                    // 更新 AI 建議
+                    document.getElementById('question').textContent = 
+                        `基於台積電 (${symbol}) 近期的走勢分析，目前股價位於 ${sampleData[0][3]} 元，PE 值 ${sampleData[0][6]}，低於產業平均，殖利率 ${sampleData[0][4]}%。從技術面來看，股價已回檔至支撐位，短期可能呈現盤整格局，建議可分批布局，並關注Q4財報表現。`;
+                }, 1000);
+            }
+            
+            // 模擬圖表更新
+            function updateCharts(data) {
+                // 實際應用中應使用 Google Charts 相關 API
+                console.log('更新圖表，資料: ', data);
+            }
+            
+            // 頁面載入時自動搜尋
+            document.addEventListener('DOMContentLoaded', fetchStockData);
+        }
+    </script>
+</body>
+</html>
